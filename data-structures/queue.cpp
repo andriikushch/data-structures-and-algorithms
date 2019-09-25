@@ -21,7 +21,7 @@ struct queue
       this->tail = nullptr;
     } 
 
-    void push(node &n) {
+    void enqueue(node &n) {
 
         if (this->tail == nullptr && this->head == nullptr) {
             this->tail = &n;
@@ -34,7 +34,7 @@ struct queue
         this->tail = &n;
     }
 
-    node * pop() {
+    node * dequeue() {
         if (this->head == nullptr && this->tail == nullptr) {
             return nullptr;
         }
@@ -63,12 +63,12 @@ int main() {
   node n2 = node(2);
   
 
-  s->push(n1);
-  s->push(n2);
+  s->enqueue(n1);
+  s->enqueue(n2);
 
   s->print();
 
-  cout << endl << s->pop()->key << endl;
+  cout << endl << s->dequeue()->key << endl;
   s->print();
 
 
