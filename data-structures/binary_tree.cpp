@@ -20,6 +20,17 @@ struct binary_tree {
         root = NULL;
     }
 
+    void recursive_walk(node *n, void process(node n)) {
+        if (n == NULL) {
+            return;
+        } else {
+            process(*n);
+        }
+
+        recursive_walk(n->left,process);
+        recursive_walk(n->right,process);
+    }
+
     void insert(node &n) {
         if (root == NULL) {
             root = &n;
@@ -164,8 +175,6 @@ int main() {
     node n7 = node(7);
     node n8 = node(8);
 
-    node * at [8] = {&n1 , &n2 , &n3, &n4, &n5, &n6, &n7, &n8};
-
     binary_tree t = binary_tree();
     t.insert(n2);
     t.insert(n1);
@@ -179,17 +188,18 @@ int main() {
 
     t.insert(n5);
 
-    t.remove(4);
+    // t.remove(4);
+
 
     cout << "digraph graphname {" << endl;
-    for (int i = 0 ; i < 8; i++) {
-        if (at[i]->left != NULL) {
-            cout << "\t" << at[i]->key << "->" << at[i]->left->key << ";" << endl;
+    t.recursive_walk(t.root, [](node n){
+        if (n.left != NULL) {
+            cout << "\t" << n.key << "->" << n.left->key << ";" << endl;
         }
-        if (at[i]->right != NULL) {
-            cout << "\t" << at[i]->key << "->" << at[i]->right->key << ";"<< endl;
+        if (n.right != NULL) {
+            cout << "\t" << n.key << "->" << n.right->key << ";"<< endl;
         }
-    }
+    });
     cout << "}" << endl;
     return 0;
 }
