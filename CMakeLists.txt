@@ -16,6 +16,7 @@ IF(NOT EXISTS ${PROJECT_SOURCE_DIR}/tests/catch.hpp)
 ENDIF()
 
 add_subdirectory(data-structures/binary_tree)
+add_subdirectory(data-structures/red_black_tree)
 add_subdirectory(data-structures/linked_list)
 add_subdirectory(data-structures/queue)
 add_subdirectory(data-structures/stack)
