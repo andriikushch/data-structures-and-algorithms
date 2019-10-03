@@ -9,9 +9,11 @@ struct node
         color = "";
         left = NULL;
         right = NULL;
+        parent = NULL;
     };
 
     int key;
+    node * parent;
     node * left;
     node * right;
     string color;
@@ -42,25 +44,31 @@ struct red_black_tree {
 
         n.color = "red";
 
-        node * temp;
-        temp = root;
+        node * current;
+        current = root;
         
         while(true) {
-            if( n.key > temp->key) {
-                if(temp->right == NULL) {
-                    temp->right = &n;
+            if( n.key > current->key) {
+                if(current->right == NULL) {
+                    current->right = &n;
                     break;
                 } else {
-                    temp = temp->right;
+                    node * tmp = current;
+
+                    current = current->right;
+                    current->parent = tmp;
                     continue;
                 }
             }
             else {
-                if(temp->left == NULL) {
-                    temp->left = &n;
+                if(current->left == NULL) {
+                    current->left = &n;
                     break;
                 } else {
-                    temp = temp->left;
+                    node * tmp = current;
+
+                    current = current->left;
+                    current->parent = tmp;
                     continue;
                 }
             }
@@ -70,38 +78,38 @@ struct red_black_tree {
     void remove(int val) {
         node * parent;
 
-        node * temp;
-        temp = root;
+        node * current;
+        current = root;
         
 
         while(true) {
-            if (temp->key == val) {
+            if (current->key == val) {
                 // no child casse
-                if (temp->right == NULL && temp->left == NULL) {
-                    if (parent->left == temp) {
+                if (current->right == NULL && current->left == NULL) {
+                    if (parent->left == current) {
                         parent->left = NULL;
                     } else {
                         parent->right = NULL;
                     }
                     
                     // delete
-                    *temp = NULL;
+                    *current = NULL;
                     break;
                 } else 
                 // one child case
-                if((temp->right != NULL) != (temp->left != NULL)) {
-                    if (parent->left == temp) {
-                        parent->left = temp->left != NULL ? temp->left : temp->right;
+                if((current->right != NULL) != (current->left != NULL)) {
+                    if (parent->left == current) {
+                        parent->left = current->left != NULL ? current->left : current->right;
                         
                         // delete
-                        *temp = NULL;
+                        *current = NULL;
                         break;
 
                     } else {
-                        parent->right = temp->right != NULL ? temp->right : temp->left;
+                        parent->right = current->right != NULL ? current->right : current->left;
                         
                         // delete
-                        *temp = NULL;
+                        *current = NULL;
                         break;
                     }
                 } else 
@@ -111,8 +119,8 @@ struct red_black_tree {
                     node * smallest;
                     node * parrent_of_the_smallest;
 
-                    parrent_of_the_smallest = temp;
-                    smallest = temp->right;
+                    parrent_of_the_smallest = current;
+                    smallest = current->right;
                     
                     while (true)
                     {
@@ -124,10 +132,10 @@ struct red_black_tree {
                         }
                     }
                     
-                    smallest->left = temp->left;
-                    smallest->right = temp->right;
+                    smallest->left = current->left;
+                    smallest->right = current->right;
 
-                    if (parent->left == temp) {
+                    if (parent->left == current) {
                         parent->left = smallest;
                     } else {
                         parent->right = smallest;
@@ -140,7 +148,7 @@ struct red_black_tree {
                     }
 
                     // delete
-                    *temp = NULL;
+                    *current = NULL;
 
                     break;
                 }
@@ -148,17 +156,17 @@ struct red_black_tree {
             
 
             // iteration
-            if(val < temp->key) {
-                if(temp->left != NULL) {
-                    parent = temp;
-                    temp = temp->left;
+            if(val < current->key) {
+                if(current->left != NULL) {
+                    parent = current;
+                    current = current->left;
                     continue;
                 } 
             }
             else {
-                if(temp->right != NULL) {
-                    parent = temp;
-                    temp = temp->right;
+                if(current->right != NULL) {
+                    parent = current;
+                    current = current->right;
                     continue;
                 }
             }
