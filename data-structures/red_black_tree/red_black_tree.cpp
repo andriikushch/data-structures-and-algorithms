@@ -26,20 +26,21 @@ struct red_black_tree {
     void recursive_walk(node *n, void process(node n)) {
         if (n == NULL) {
             return;
-        } else {
-            process(*n);
-        }
-
+        } 
         recursive_walk(n->left,process);
+        process(*n);
         recursive_walk(n->right,process);
     }
 
     void insert(node &n) {
         if (root == NULL) {
             root = &n;
+            root->color = "black";
 
             return;
         }
+
+        n.color = "red";
 
         node * temp;
         temp = root;
@@ -196,7 +197,7 @@ int main() {
 
     cout << "digraph graphname {" << endl;
     t.recursive_walk(t.root, [](node n){
-        cout << "\t" << n.key << " [label=\""<< n.key <<"\" style=filled color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
+        cout << "\t" << n.key << " [label=\""<< n.key <<"\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
         if (n.left != NULL) {
             cout << "\t" << n.key << "->" << n.left->key << ";" << endl;
         }
