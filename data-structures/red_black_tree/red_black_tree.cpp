@@ -25,7 +25,7 @@ struct red_black_tree {
         root = NULL;
     }
 
-    void recursive_walk(node *n, void process(node n)) {
+    void recursive_walk(node *n, void process(node &n)) {
         if (n == NULL) {
             return;
         } 
@@ -44,136 +44,61 @@ struct red_black_tree {
 
         n.color = "red";
 
-        node * current;
-        current = root;
+        node * tmp;
+        tmp = root;
         
         while(true) {
-            if( n.key > current->key) {
-                if(current->right == NULL) {
-                    current->right = &n;
+            if( n.key > tmp->key) {
+                if(tmp->right == NULL) {
+                    n.parent = tmp;
+                    tmp->right = &n;
                     break;
                 } else {
-                    node * tmp = current;
-
-                    current = current->right;
-                    current->parent = tmp;
+                    tmp = tmp->right;
                     continue;
                 }
             }
             else {
-                if(current->left == NULL) {
-                    current->left = &n;
+                if(tmp->left == NULL) {
+                    n.parent = tmp;
+                    tmp->left = &n;
                     break;
                 } else {
-                    node * tmp = current;
-
-                    current = current->left;
-                    current->parent = tmp;
+                    tmp = tmp->left;
                     continue;
                 }
             }
-        }    
+        } 
+
+
+        // check parent is red and if "unkle is red"
+        if (n.parent != NULL && n.parent->color == "red" && n.parent->parent != NULL) {
+            // check if "unkle" is left or right child
+            node * uncle;
+            if (n.parent->parent->left == n.parent) {
+                // "unkle" is right
+                if (n.parent->parent->right != nullptr) {
+                    uncle = n.parent->parent->right;
+                }
+            } else {
+                // "unkle" is left
+                if (n.parent->parent->left != nullptr) {
+                    uncle = n.parent->parent->left;
+                }
+            }
+
+            // if "uncle" is red and parent is red, paint them black and grandpa paint into red
+            if (uncle != nullptr && uncle->color == "red") {
+                uncle->color = "black";
+                n.parent->color = "black";
+
+                // check if is not a root node
+                if (n.parent->parent->parent != nullptr) {
+                    n.parent->parent->color = "red";
+                }
+            }
+        }   
     }
-
-    void remove(int val) {
-        node * parent;
-
-        node * current;
-        current = root;
-        
-
-        while(true) {
-            if (current->key == val) {
-                // no child casse
-                if (current->right == NULL && current->left == NULL) {
-                    if (parent->left == current) {
-                        parent->left = NULL;
-                    } else {
-                        parent->right = NULL;
-                    }
-                    
-                    // delete
-                    *current = NULL;
-                    break;
-                } else 
-                // one child case
-                if((current->right != NULL) != (current->left != NULL)) {
-                    if (parent->left == current) {
-                        parent->left = current->left != NULL ? current->left : current->right;
-                        
-                        // delete
-                        *current = NULL;
-                        break;
-
-                    } else {
-                        parent->right = current->right != NULL ? current->right : current->left;
-                        
-                        // delete
-                        *current = NULL;
-                        break;
-                    }
-                } else 
-                // two child case
-                {
-                    //find in the right smallest
-                    node * smallest;
-                    node * parrent_of_the_smallest;
-
-                    parrent_of_the_smallest = current;
-                    smallest = current->right;
-                    
-                    while (true)
-                    {
-                        if(smallest->left != NULL) {
-                            parrent_of_the_smallest = smallest;
-                            smallest = smallest->left;
-                        } else {
-                            break;
-                        }
-                    }
-                    
-                    smallest->left = current->left;
-                    smallest->right = current->right;
-
-                    if (parent->left == current) {
-                        parent->left = smallest;
-                    } else {
-                        parent->right = smallest;
-                    }
-                
-                    if (parrent_of_the_smallest->left == smallest) {
-                        parrent_of_the_smallest->left = NULL;
-                    } else {
-                        parrent_of_the_smallest->right = NULL;
-                    }
-
-                    // delete
-                    *current = NULL;
-
-                    break;
-                }
-            }
-            
-
-            // iteration
-            if(val < current->key) {
-                if(current->left != NULL) {
-                    parent = current;
-                    current = current->left;
-                    continue;
-                } 
-            }
-            else {
-                if(current->right != NULL) {
-                    parent = current;
-                    current = current->right;
-                    continue;
-                }
-            }
-
-            break;
-        }    
-    };
 };
 
 int main() {
@@ -204,8 +129,13 @@ int main() {
 
 
     cout << "digraph graphname {" << endl;
-    t.recursive_walk(t.root, [](node n){
-        cout << "\t" << n.key << " [label=\""<< n.key <<"\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
+    t.recursive_walk(t.root, [](node &n){
+        cout << "\t" 
+        << n.key << " [label=\"" 
+        << "parent : "<< n.parent << "\\n" 
+        << n.key 
+        <<  "\\nself : " << &n << "\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
+        
         if (n.left != NULL) {
             cout << "\t" << n.key << "->" << n.left->key << ";" << endl;
         }
@@ -214,5 +144,6 @@ int main() {
         }
     });
     cout << "}" << endl;
+
     return 0;
 }
