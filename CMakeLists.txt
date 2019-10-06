@@ -11,9 +11,12 @@ set (LEARN_CMAKE_VERSION_MAJOR 0)
 set (LEARN_CMAKE_VERSION_MINOR 0)
 set (LEARN_CMAKE_VERSION_PATCH 1)
 
-file(DOWNLOAD https://github.com/catchorg/Catch2/releases/download/v2.9.2/catch.hpp ${PROJECT_SOURCE_DIR}/tests/catch.hpp)
+IF(NOT EXISTS ${PROJECT_SOURCE_DIR}/tests/catch.hpp)
+    file(DOWNLOAD https://github.com/catchorg/Catch2/releases/download/v2.9.2/catch.hpp ${PROJECT_SOURCE_DIR}/tests/catch.hpp)
+ENDIF()
 
 add_subdirectory(data-structures/binary_tree)
+add_subdirectory(data-structures/red_black_tree)
 add_subdirectory(data-structures/linked_list)
 add_subdirectory(data-structures/queue)
 add_subdirectory(data-structures/stack)
