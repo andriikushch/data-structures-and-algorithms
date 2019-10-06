@@ -2,6 +2,9 @@
 #include <string.h>
 using namespace std;
 
+const string BLACK = "black";
+const string RED = "red";
+
 struct node
 {
     node(int n) {
@@ -37,18 +40,18 @@ struct red_black_tree {
     void insert(node &n) {
         if (root == NULL) {
             root = &n;
-            root->color = "black";
+            root->color = BLACK;
 
             return;
         }
 
-        n.color = "red";
+        n.color = RED;
 
         node * tmp;
         tmp = root;
         
         while(true) {
-            if( n.key > tmp->key) {
+            if(n.key > tmp->key) {
                 if(tmp->right == NULL) {
                     n.parent = tmp;
                     tmp->right = &n;
@@ -70,34 +73,43 @@ struct red_black_tree {
             }
         } 
 
+        // balace tree 
+        tmp = &n;
 
-        // check parent is red and if "unkle is red"
-        if (n.parent != NULL && n.parent->color == "red" && n.parent->parent != NULL) {
-            // check if "unkle" is left or right child
-            node * uncle;
-            if (n.parent->parent->left == n.parent) {
-                // "unkle" is right
-                if (n.parent->parent->right != nullptr) {
-                    uncle = n.parent->parent->right;
+        while(tmp->parent != nullptr) {
+            // check parent is red and if "unkle is red"
+            if (tmp->parent != NULL && tmp->parent->color == RED && tmp->parent->parent != NULL) {
+                // check if "unkle" is left or right child
+                node * uncle;
+                if (tmp->parent->parent->left == tmp->parent) {
+                    // "unkle" is right
+                    if (tmp->parent->parent->right != nullptr) {
+                        uncle = tmp->parent->parent->right;
+                    }
+                } else {
+                    // "unkle" is left
+                    if (tmp->parent->parent->left != nullptr) {
+                        uncle = tmp->parent->parent->left;
+                    }
                 }
-            } else {
-                // "unkle" is left
-                if (n.parent->parent->left != nullptr) {
-                    uncle = n.parent->parent->left;
+
+                // if "uncle" is red and parent is red, paint them black and grandpa paint into red
+                if (uncle != nullptr && uncle->color == RED) {
+                    uncle->color = BLACK;
+                    tmp->parent->color = BLACK;
+                    tmp->parent->parent->color = RED;
                 }
             }
 
-            // if "uncle" is red and parent is red, paint them black and grandpa paint into red
-            if (uncle != nullptr && uncle->color == "red") {
-                uncle->color = "black";
-                n.parent->color = "black";
-
-                // check if is not a root node
-                if (n.parent->parent->parent != nullptr) {
-                    n.parent->parent->color = "red";
-                }
-            }
-        }   
+            // if (tmp->parent->parent) {
+            //     tmp = tmp->parent->parent;
+            //     if (tmp->parent == nullptr) {
+            //         tmp->color = BLACK;
+            //     }   
+            // } else {
+            //     break;
+            // }
+        }
     }
 };
 
