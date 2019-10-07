@@ -38,6 +38,7 @@ struct red_black_tree {
     }
 
     void insert(node &n) {
+        // 1. do regular b-tree insertion
         if (root == NULL) {
             root = &n;
             root->color = BLACK;
@@ -76,28 +77,71 @@ struct red_black_tree {
         // balace tree 
         tmp = &n;
 
-        while(tmp->parent != nullptr) {
+        while(true) {
+            // 2.  if tmp is root, change color of tmp as BLACK
+            if (tmp->parent == NULL) {
+                tmp->color = BLACK;
+                break;
+            }
+            
+            // 3. following if color of tmp’s parent is not BLACK and x is not root.
             // check parent is red and if "unkle is red"
             if (tmp->parent != NULL && tmp->parent->color == RED && tmp->parent->parent != NULL) {
                 // check if "unkle" is left or right child
                 node * uncle;
-                if (tmp->parent->parent->left == tmp->parent) {
+                node * grandpa = tmp->parent->parent;
+
+                if (grandpa->left == tmp->parent) {
                     // "unkle" is right
-                    if (tmp->parent->parent->right != nullptr) {
-                        uncle = tmp->parent->parent->right;
+                    if (grandpa->right != NULL) {
+                        uncle = grandpa->right;
                     }
                 } else {
                     // "unkle" is left
-                    if (tmp->parent->parent->left != nullptr) {
-                        uncle = tmp->parent->parent->left;
+                    if (grandpa->left != NULL) {
+                        uncle = grandpa->left;
                     }
                 }
 
                 // if "uncle" is red and parent is red, paint them black and grandpa paint into red
-                if (uncle != nullptr && uncle->color == RED) {
+                if (uncle != NULL && uncle->color == RED) {
+                    
+                    // change color of parent and uncle as BLACK
                     uncle->color = BLACK;
                     tmp->parent->color = BLACK;
-                    tmp->parent->parent->color = RED;
+
+                    // change color of grand parent as RED
+                    grandpa->color = RED;
+
+                    // change tmp = tmp’s grandparent, repeat steps 2 and 3 for new tmp
+                    tmp = grandpa;
+                    
+                    continue;
+                } else if (uncle != NULL && uncle->color == BLACK) {
+                    // 1. left Left Case (p is left child of g and tmp is left child of p)
+                    if (grandpa->left == tmp->parent && tmp == tmp->parent->left) {
+                        // move subtree from parent to grandpa
+                        grandpa->left = tmp->parent->right;
+                        // make grandpa child of parent
+                        tmp->parent->right = grandpa;
+                        
+                        // make grandpa parent parent of parent
+                        tmp->parent->parent = grandpa->parent;
+                        // make parent parent of grand pa
+                        grandpa->parent = tmp->parent;
+
+                        // swap colors
+                        string parent_color = tmp->parent->color;
+                        tmp->parent->color = grandpa->color;
+                        grandpa->color = parent_color;
+                    } else if (NULL) { // continue
+
+                    }
+                // 2. left Right Case (p is left child of g and tmp is right child of p)
+                // 3. right Right Case (Mirror of case 1)
+                // 4. right Left Case (Mirror of case 2)
+
+
                 }
             }
 
