@@ -27,23 +27,7 @@ TEST_CASE( "red black tree should have a proper shape", "[red black tree]" ) {
         t.insert(n5);
 
         // EXPECTATION:
-        //         digraph graphname {
-        //         1 [label="parent : 0x7ffee066aaa8\n1\nself : 0x7ffee066aae0" style=filled fontcolor="white" color="dodgerblue" fillcolor="black" ]
-        //         2 [label="parent : 0x0\n2\nself : 0x7ffee066aaa8" style=filled fontcolor="white" color="dodgerblue" fillcolor="red" ]
-        //         2->1;
-        //         2->3;
-        //         3 [label="parent : 0x7ffee066aa38\n3\nself : 0x7ffee066aa70" style=filled fontcolor="white" color="dodgerblue" fillcolor="black" ]
-        //         4 [label="parent : 0x0\n4\nself : 0x7ffee066aa38" style=filled fontcolor="white" color="dodgerblue" fillcolor="black" ]
-        //         4->2;
-        //         4->7;
-        //         5 [label="parent : 0x7ffee066a9c8\n5\nself : 0x7ffee066aa00" style=filled fontcolor="white" color="dodgerblue" fillcolor="red" ]
-        //         6 [label="parent : 0x7ffee066aa38\n6\nself : 0x7ffee066a9c8" style=filled fontcolor="white" color="dodgerblue" fillcolor="black" ]
-        //         6->5;
-        //         7 [label="parent : 0x7ffee066aa38\n7\nself : 0x7ffee066a990" style=filled fontcolor="white" color="dodgerblue" fillcolor="red" ]
-        //         7->6;
-        //         7->8;
-        //         8 [label="parent : 0x7ffee066a990\n8\nself : 0x7ffee066a958" style=filled fontcolor="white" color="dodgerblue" fillcolor="black" ]
-        // }
+        
 
         //todo: add expecation on links between nodes
         t.print();

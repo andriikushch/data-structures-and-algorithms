@@ -148,6 +148,8 @@ struct red_black_tree {
 
                     // 2. left Right Case (p is left child of g and tmp is right child of p)
                     if (grandpa->left == tmp->parent && tmp == tmp->parent->right) {
+                        string tmp_parent_color = tmp->parent->color;
+
                         // rotate
                         grandpa->left = tmp;
                         node * t = tmp->left;
@@ -161,6 +163,10 @@ struct red_black_tree {
                         tmp->parent->left = tmp->right;
                         tmp->right = tmp->parent;
                         tmp->parent = tmp->parent->parent;
+
+                        // swap colors
+                        tmp->right->color = tmp->color;
+                        tmp->color = tmp_parent_color;
                     }
 
                     // 3. right Right Case (Mirror of case 1)
@@ -185,6 +191,7 @@ struct red_black_tree {
                     }
                     // 4. right Left Case (Mirror of case 2)
                     if (grandpa->right == tmp->parent && tmp == tmp->parent->left) {
+                        string tmp_parent_color = tmp->parent->color;
                         // rotate
                         grandpa->right = tmp;
                         node * t = tmp->right;
@@ -198,6 +205,10 @@ struct red_black_tree {
                         tmp->parent->right = tmp->left;
                         tmp->left = tmp->parent;
                         tmp->parent = tmp->parent->parent;
+
+                        // swap colors
+                        tmp->left->color = tmp->color;
+                        tmp->color = tmp_parent_color;
                     }
                 }
             }
@@ -213,50 +224,23 @@ struct red_black_tree {
             root = tmp;
         }
     }
+
+    void print() {
+        cout << "digraph graphname {" << endl;
+        recursive_walk(root, [](node &n){
+            cout << "\t"
+                << n.key << " [label=\""
+                << "parent : "<< n.parent << "\\n"
+                << n.key
+                <<  "\\nself : " << &n << "\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
+
+            if (n.left != NULL) {
+                cout << "\t" << n.key << "->" << n.left->key << ";" << endl;
+            }
+            if (n.right != NULL) {
+                cout << "\t" << n.key << "->" << n.right->key << ";"<< endl;
+            }
+        });
+        cout << "}" << endl;
+    }
 };
-
-int main() {
-
-    node n1 = node(1);
-    node n2 = node(2);
-    node n3 = node(3);
-    node n4 = node(4);
-    node n5 = node(5);
-    node n6 = node(6);
-    node n7 = node(7);
-    node n8 = node(8);
-
-    red_black_tree t = red_black_tree();
-    t.insert(n2);
-    t.insert(n1);
-    t.insert(n7);
-
-    t.insert(n4);
-    t.insert(n8);
-
-    t.insert(n3);
-    t.insert(n6);
-
-    t.insert(n5);
-
-    //t.remove(4);
-
-    cout << "digraph graphname {" << endl;
-    t.recursive_walk(t.root, [](node &n){
-        cout << "\t"
-             << n.key << " [label=\""
-             << "parent : "<< n.parent << "\\n"
-             << n.key
-             <<  "\\nself : " << &n << "\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
-
-        if (n.left != NULL) {
-            cout << "\t" << n.key << "->" << n.left->key << ";" << endl;
-        }
-        if (n.right != NULL) {
-            cout << "\t" << n.key << "->" << n.right->key << ";"<< endl;
-        }
-    });
-    cout << "}" << endl;
-
-    return 0;
-}
