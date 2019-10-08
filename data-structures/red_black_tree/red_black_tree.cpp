@@ -31,7 +31,7 @@ struct red_black_tree {
     void recursive_walk(node *n, void process(node &n)) {
         if (n == NULL) {
             return;
-        } 
+        }
 
         recursive_walk(n->left, process);
         process(*n);
@@ -51,7 +51,7 @@ struct red_black_tree {
 
         node * tmp;
         tmp = root;
-        
+
         while(true) {
             if(n.key > tmp->key) {
                 if(tmp->right == NULL) {
@@ -73,13 +73,13 @@ struct red_black_tree {
                     continue;
                 }
             }
-        } 
+        }
 
-        // balace tree 
+        // balace tree
         tmp = &n;
 
         while(true) {
-            
+
             // 2.  if tmp is root, change color of tmp as BLACK
             if (tmp->parent == NULL) {
                 tmp->color = BLACK;
@@ -122,7 +122,7 @@ struct red_black_tree {
 
                     // change tmp = tmp’s grandparent, repeat steps 2 and 3 for new tmp
                     tmp = grandpa;
-                    
+
                     continue;
                 } else if (uncle != NULL && uncle->color == BLACK) {
                     // 1. left Left Case (p is left child of g and tmp is left child of p)
@@ -131,7 +131,7 @@ struct red_black_tree {
                         grandpa->left = tmp->parent->right;
                         // make grandpa child of parent
                         tmp->parent->right = grandpa;
-                        
+
                         // make grandpa parent parent of parent
                         tmp->parent->parent = grandpa->parent;
                         // make parent parent of grand pa
@@ -144,17 +144,23 @@ struct red_black_tree {
 
                         // todo: change tmp?
                         tmp = tmp->parent;
-                    }  
+                    }
 
                     // 2. left Right Case (p is left child of g and tmp is right child of p)
-                    if (grandpa->left == tmp->parent && tmp == tmp->parent->right) { 
+                    if (grandpa->left == tmp->parent && tmp == tmp->parent->right) {
                         // rotate
                         grandpa->left = tmp;
+                        node * t = tmp->left;
                         tmp->left = tmp->parent;
 
                         tmp->parent->parent = tmp;
-                        tmp->parent->right = tmp->left;
+                        tmp->parent->right = t;
                         tmp->parent = grandpa;
+
+                        // turn
+                        tmp->parent->left = tmp->right;
+                        tmp->right = tmp->parent;
+                        tmp->parent = tmp->parent->parent;
                     }
 
                     // 3. right Right Case (Mirror of case 1)
@@ -163,7 +169,7 @@ struct red_black_tree {
                         grandpa->right = tmp->parent->left;
                         // make grandpa child of parent
                         tmp->parent->left = grandpa;
-                        
+
                         // make grandpa parent parent of parent
                         tmp->parent->parent = grandpa->parent;
                         // make parent parent of grand pa
@@ -178,22 +184,33 @@ struct red_black_tree {
                         tmp = tmp->parent;
                     }
                     // 4. right Left Case (Mirror of case 2)
-                    if (grandpa->right == tmp->parent && tmp == tmp->parent->left) { 
+                    if (grandpa->right == tmp->parent && tmp == tmp->parent->left) {
                         // rotate
                         grandpa->right = tmp;
+                        node * t = tmp->right;
                         tmp->right = tmp->parent;
 
                         tmp->parent->parent = tmp;
-                        tmp->parent->left = tmp->right;
+                        tmp->parent->left = t;
                         tmp->parent = grandpa;
+
+                        // turn
+                        tmp->parent->right = tmp->left;
+                        tmp->left = tmp->parent;
+                        tmp->parent = tmp->parent->parent;
                     }
                 }
             }
 
-            if (tmp->parent != NULL && tmp->parent->color == BLACK) { 
+            // simplify
+            if (tmp->parent != NULL && tmp->parent->color == BLACK) {
                 break;
             }
-            
+        }
+
+        // simplify
+        if (tmp->parent == NULL) {
+            root = tmp;
         }
     }
 };
@@ -224,15 +241,14 @@ int main() {
 
     //t.remove(4);
 
-
     cout << "digraph graphname {" << endl;
     t.recursive_walk(t.root, [](node &n){
-        cout << "\t" 
-        << n.key << " [label=\"" 
-        << "parent : "<< n.parent << "\\n" 
-        << n.key 
-        <<  "\\nself : " << &n << "\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
-        
+        cout << "\t"
+             << n.key << " [label=\""
+             << "parent : "<< n.parent << "\\n"
+             << n.key
+             <<  "\\nself : " << &n << "\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
+
         if (n.left != NULL) {
             cout << "\t" << n.key << "->" << n.left->key << ";" << endl;
         }
