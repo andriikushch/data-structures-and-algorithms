@@ -20,6 +20,30 @@ struct node
     node * left;
     node * right;
     string color;
+
+    void connectOnTheLeftSide(node * n) {
+        left = n;
+        if (left) {
+            n->parent = this;
+        }
+    }
+
+    void connectOnTheRightSide(node * n) {
+        right = n;
+        if (right) {
+            n->parent = this;
+        }
+    }
+
+    bool isRightChild(node * n) {
+        return right == n;
+    }
+
+    void swapColors(node * n) {
+        string tmp_color = n->color;
+        n->color = color;
+        color = tmp_color;
+    }
 };
 
 struct red_black_tree {
@@ -80,23 +104,39 @@ struct red_black_tree {
     }
 
     void leftLeftCase(node * tmp , node * grandpa) {
-        // move subtree from parent to grandpa
-        grandpa->left = tmp->parent->right;
-        // make grandpa child of parent
-        tmp->parent->right = grandpa;
+        // for readability
+        node * parent = tmp->parent;
 
-        // make grandpa parent parent of parent
-        tmp->parent->parent = grandpa->parent;
-        // make parent parent of grand pa
-        grandpa->parent = tmp->parent;
+        // how grandpa attached to it's parent
+        int side = 0; // -1 left, 0 no parent, 1 right
+
+        // move subtree from parent to grandpa
+        grandpa->connectOnTheLeftSide(parent->right);
+
+        // store grandpa parent
+        node * grandpa_parent = grandpa->parent;
+        if (grandpa_parent) {
+            if (grandpa_parent->isRightChild(parent)) {
+                side = 1;
+            } else {
+                side = -1;
+            }
+        }
+
+        // make grandpa child of parent
+        parent->connectOnTheRightSide(grandpa);
+
+        // restore link to previous grandpa parent
+        if (side == 1) {
+            grandpa_parent->connectOnTheRightSide(parent);
+        } else if (side == -1) {
+            grandpa_parent->connectOnTheLeftSide(parent);
+        } else {
+            parent->parent = NULL;
+        }
 
         // swap colors
-        string parent_color = tmp->parent->color;
-        tmp->parent->color = grandpa->color;
-        grandpa->color = parent_color;
-
-        // todo: change tmp?
-        tmp = tmp->parent;
+        parent->swapColors(grandpa);
     }
 
     void leftRightCase(node * tmp , node * grandpa) {
