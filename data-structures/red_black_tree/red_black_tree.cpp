@@ -38,6 +38,89 @@ struct red_black_tree {
         recursive_walk(n->right, process);
     }
 
+    void rightRightCase(node * tmp , node * grandpa) {
+        // move subtree from parent to grandpa
+        grandpa->right = tmp->parent->left;
+        // make grandpa child of parent
+        tmp->parent->left = grandpa;
+
+        // make grandpa parent parent of parent
+        tmp->parent->parent = grandpa->parent;
+        // make parent parent of grand pa
+        grandpa->parent = tmp->parent;
+
+        // swap colors
+        string parent_color = tmp->parent->color;
+        tmp->parent->color = grandpa->color;
+        grandpa->color = parent_color;
+
+        // todo: change tmp?
+        tmp = tmp->parent;
+    }
+
+    void rightLeftCase(node * tmp, node * grandpa) {
+        string tmp_parent_color = tmp->parent->color;
+        // rotate
+        grandpa->right = tmp;
+        node * t = tmp->right;
+        tmp->right = tmp->parent;
+
+        tmp->parent->parent = tmp;
+        tmp->parent->left = t;
+        tmp->parent = grandpa;
+
+        // turn
+        tmp->parent->right = tmp->left;
+        tmp->left = tmp->parent;
+        tmp->parent = tmp->parent->parent;
+
+        // swap colors
+        tmp->left->color = tmp->color;
+        tmp->color = tmp_parent_color;
+    }
+
+    void leftLeftCase(node * tmp , node * grandpa) {
+        // move subtree from parent to grandpa
+        grandpa->left = tmp->parent->right;
+        // make grandpa child of parent
+        tmp->parent->right = grandpa;
+
+        // make grandpa parent parent of parent
+        tmp->parent->parent = grandpa->parent;
+        // make parent parent of grand pa
+        grandpa->parent = tmp->parent;
+
+        // swap colors
+        string parent_color = tmp->parent->color;
+        tmp->parent->color = grandpa->color;
+        grandpa->color = parent_color;
+
+        // todo: change tmp?
+        tmp = tmp->parent;
+    }
+
+    void leftRightCase(node * tmp , node * grandpa) {
+        string tmp_parent_color = tmp->parent->color;
+
+        // rotate
+        grandpa->left = tmp;
+        node * t = tmp->left;
+        tmp->left = tmp->parent;
+
+        tmp->parent->parent = tmp;
+        tmp->parent->right = t;
+        tmp->parent = grandpa;
+
+        // turn
+        tmp->parent->left = tmp->right;
+        tmp->right = tmp->parent;
+        tmp->parent = tmp->parent->parent;
+
+        // swap colors
+        tmp->right->color = tmp->color;
+        tmp->color = tmp_parent_color;
+    }
+
     void insert(node &n) {
         // 1. do regular b-tree insertion
         if (root == NULL) {
@@ -127,88 +210,21 @@ struct red_black_tree {
                 } else if (uncle != NULL && uncle->color == BLACK) {
                     // 1. left Left Case (p is left child of g and tmp is left child of p)
                     if (grandpa->left == tmp->parent && tmp == tmp->parent->left) {
-                        // move subtree from parent to grandpa
-                        grandpa->left = tmp->parent->right;
-                        // make grandpa child of parent
-                        tmp->parent->right = grandpa;
-
-                        // make grandpa parent parent of parent
-                        tmp->parent->parent = grandpa->parent;
-                        // make parent parent of grand pa
-                        grandpa->parent = tmp->parent;
-
-                        // swap colors
-                        string parent_color = tmp->parent->color;
-                        tmp->parent->color = grandpa->color;
-                        grandpa->color = parent_color;
-
-                        // todo: change tmp?
-                        tmp = tmp->parent;
+                        leftLeftCase(tmp, grandpa);
                     }
 
                     // 2. left Right Case (p is left child of g and tmp is right child of p)
                     if (grandpa->left == tmp->parent && tmp == tmp->parent->right) {
-                        string tmp_parent_color = tmp->parent->color;
-
-                        // rotate
-                        grandpa->left = tmp;
-                        node * t = tmp->left;
-                        tmp->left = tmp->parent;
-
-                        tmp->parent->parent = tmp;
-                        tmp->parent->right = t;
-                        tmp->parent = grandpa;
-
-                        // turn
-                        tmp->parent->left = tmp->right;
-                        tmp->right = tmp->parent;
-                        tmp->parent = tmp->parent->parent;
-
-                        // swap colors
-                        tmp->right->color = tmp->color;
-                        tmp->color = tmp_parent_color;
+                        leftRightCase(tmp, grandpa);
                     }
 
                     // 3. right Right Case (Mirror of case 1)
                     if (grandpa->right == tmp->parent && tmp == tmp->parent->right) {
-                        // move subtree from parent to grandpa
-                        grandpa->right = tmp->parent->left;
-                        // make grandpa child of parent
-                        tmp->parent->left = grandpa;
-
-                        // make grandpa parent parent of parent
-                        tmp->parent->parent = grandpa->parent;
-                        // make parent parent of grand pa
-                        grandpa->parent = tmp->parent;
-
-                        // swap colors
-                        string parent_color = tmp->parent->color;
-                        tmp->parent->color = grandpa->color;
-                        grandpa->color = parent_color;
-
-                        // todo: change tmp?
-                        tmp = tmp->parent;
+                        rightRightCase(tmp, grandpa);
                     }
                     // 4. right Left Case (Mirror of case 2)
                     if (grandpa->right == tmp->parent && tmp == tmp->parent->left) {
-                        string tmp_parent_color = tmp->parent->color;
-                        // rotate
-                        grandpa->right = tmp;
-                        node * t = tmp->right;
-                        tmp->right = tmp->parent;
-
-                        tmp->parent->parent = tmp;
-                        tmp->parent->left = t;
-                        tmp->parent = grandpa;
-
-                        // turn
-                        tmp->parent->right = tmp->left;
-                        tmp->left = tmp->parent;
-                        tmp->parent = tmp->parent->parent;
-
-                        // swap colors
-                        tmp->left->color = tmp->color;
-                        tmp->color = tmp_parent_color;
+                        rightLeftCase(tmp, grandpa);
                     }
                 }
             }
