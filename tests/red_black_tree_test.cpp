@@ -52,6 +52,53 @@ TEST_CASE( "red black tree should have a proper shape", "[red black tree]" ) {
 
     }
 
+    SECTION("left right case") {
+        // given
+        node g = node(1);
+        g.color = BLACK;
+
+        node u = node(2);
+        u.color = BLACK;
+
+        node p = node(3);
+        p.color = RED;
+
+        node x = node(4);
+        x.color = RED;
+
+        g.right = &u;
+        u.parent = &g;
+
+        g.left = &p;
+        p.parent = &g;
+
+        p.right = &x;
+        x.parent = &p;
+
+        red_black_tree t = red_black_tree();
+        t.root = &g;
+
+        // when
+        t.leftRightCase(&x);
+
+        // then
+        REQUIRE(t.root->key == 4);
+        REQUIRE(t.root->parent == NULL);
+        REQUIRE(t.root->color == BLACK);
+
+        REQUIRE(t.root->left->key == 3);
+        REQUIRE(t.root->left->parent == t.root);
+        REQUIRE(t.root->left->color == RED);
+
+        REQUIRE(t.root->right->key == 1);
+        REQUIRE(t.root->right->parent == t.root);
+        REQUIRE(t.root->right->color == RED);
+
+        REQUIRE(t.root->right->right->key == 2);
+        REQUIRE(t.root->right->right->parent == t.root->right);
+        REQUIRE(t.root->right->right->color == BLACK);
+
+    }
 
     SECTION("right right case") {
         // given
@@ -98,10 +145,56 @@ TEST_CASE( "red black tree should have a proper shape", "[red black tree]" ) {
         REQUIRE(t.root->left->left->key == 2);
         REQUIRE(t.root->left->left->parent == t.root->left);
         REQUIRE(t.root->left->left->color == BLACK);
-
     }
 
-    SECTION( "resizing bigger changes size and capacity" ) {
+    SECTION("right right case") {
+        // given
+        node g = node(1);
+        g.color = BLACK;
+
+        node u = node(2);
+        u.color = BLACK;
+
+        node p = node(3);
+        p.color = RED;
+
+        node x = node(4);
+        x.color = RED;
+
+        g.left = &u;
+        u.parent = &g;
+
+        g.right = &p;
+        p.parent = &g;
+
+        p.left = &x;
+        x.parent = &p;
+
+        red_black_tree t = red_black_tree();
+        t.root = &g;
+
+        // when
+        t.rightLeftCase(&x);
+
+        // then
+        REQUIRE(t.root->key == 4);
+        REQUIRE(t.root->parent == NULL);
+        REQUIRE(t.root->color == BLACK);
+
+        REQUIRE(t.root->right->key == 3);
+        REQUIRE(t.root->right->parent == t.root);
+        REQUIRE(t.root->right->color == RED);
+
+        REQUIRE(t.root->left->key == 1);
+        REQUIRE(t.root->left->parent == t.root);
+        REQUIRE(t.root->left->color == RED);
+
+        REQUIRE(t.root->left->left->key == 2);
+        REQUIRE(t.root->left->left->parent == t.root->left);
+        REQUIRE(t.root->left->left->color == BLACK);
+    }
+
+    SECTION( "insert not ordered data" ) {
         // prepare the tree
         node n1 = node(1);
         node n2 = node(2);
@@ -125,7 +218,7 @@ TEST_CASE( "red black tree should have a proper shape", "[red black tree]" ) {
         // EXPECTATION:
 
 
-        //t.print();
+        t.print();
         REQUIRE(t.root->key == 4);
         REQUIRE(t.root->color == BLACK);
 

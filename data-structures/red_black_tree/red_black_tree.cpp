@@ -34,13 +34,13 @@ struct red_black_tree {
         root = NULL;
     }
 
-    void recursive_walk(node *n, void process(node *n)) {
+    void recursive_walk(node *n, void process(node &n)) {
         if (n == NULL) {
             return;
         }
 
         recursive_walk(n->left, process);
-        process(n);
+        process(*n);
         recursive_walk(n->right, process);
     }
 
@@ -65,25 +65,20 @@ struct red_black_tree {
         }
     }
 
-    void rightLeftCase(node * tmp, node * grandpa) {
-        string tmp_parent_color = tmp->parent->color;
-        // rotate
-        grandpa->right = tmp;
-        node * t = tmp->right;
-        tmp->right = tmp->parent;
+    void rightLeftCase(node * tmp) {
+        // for readability
+        node * parent = tmp->parent;
+        node * grandpa = tmp->parent->parent;
 
-        tmp->parent->parent = tmp;
-        tmp->parent->left = t;
+        node * tmp_right_subtree = tmp->right;
+
+        tmp->right = parent;
+        parent->left = tmp_right_subtree;
+        parent->parent = tmp;
+
         tmp->parent = grandpa;
 
-        // turn
-        tmp->parent->right = tmp->left;
-        tmp->left = tmp->parent;
-        tmp->parent = tmp->parent->parent;
-
-        // swap colors
-        tmp->left->color = tmp->color;
-        tmp->color = tmp_parent_color;
+        rightRightCase(parent);
     }
 
     void leftLeftCase(node * tmp) {
@@ -107,26 +102,20 @@ struct red_black_tree {
         }
     }
 
-    void leftRightCase(node * tmp , node * grandpa) {
-        string tmp_parent_color = tmp->parent->color;
+    void leftRightCase(node * tmp) {
+        // for readability
+        node * parent = tmp->parent;
+        node * grandpa = tmp->parent->parent;
 
-        // rotate
-        grandpa->left = tmp;
-        node * t = tmp->left;
-        tmp->left = tmp->parent;
+        node * tmp_left_subtree = tmp->left;
 
-        tmp->parent->parent = tmp;
-        tmp->parent->right = t;
+        tmp->left = parent;
+        parent->right = tmp_left_subtree;
+        parent->parent = tmp;
+
         tmp->parent = grandpa;
 
-        // turn
-        tmp->parent->left = tmp->right;
-        tmp->right = tmp->parent;
-        tmp->parent = tmp->parent->parent;
-
-        // swap colors
-        tmp->right->color = tmp->color;
-        tmp->color = tmp_parent_color;
+        leftLeftCase(parent);
     }
 
     void insert(node &n) {
@@ -223,7 +212,7 @@ struct red_black_tree {
 
                     // 2. left Right Case (p is left child of g and tmp is right child of p)
                     if (grandpa->left == tmp->parent && tmp == tmp->parent->right) {
-                        leftRightCase(tmp, grandpa);
+                        leftRightCase(tmp);
                     }
 
                     // 3. right Right Case (Mirror of case 1)
@@ -232,7 +221,7 @@ struct red_black_tree {
                     }
                     // 4. right Left Case (Mirror of case 2)
                     if (grandpa->right == tmp->parent && tmp == tmp->parent->left) {
-                        rightLeftCase(tmp, grandpa);
+                        rightLeftCase(tmp);
                     }
                 }
             }
@@ -251,20 +240,18 @@ struct red_black_tree {
 
     void print() {
         cout << "digraph graphname {" << endl;
-        recursive_walk(root, [](node * n){
-            if (n) {
-                cout << "\t"
-                     << n->key << " [label=\""
-                     << "parent : "<< n->parent << "\\n"
-                     << n->key
-                     <<  "\\nself : " << &n << "\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n->color<<"\" ]" << endl;
+        recursive_walk(root, [](node &n){
+            cout << "\t"
+                 << n.key << " [label=\""
+                 << "parent : "<< n.parent << "\\n"
+                 << n.key
+                 <<  "\\nself : " << &n << "\" style=filled fontcolor=\"white\" color=\"dodgerblue\" fillcolor=\""<<n.color<<"\" ]" << endl;
 
-                if (n->left != NULL) {
-                    cout << "\t" << n->key << "->" << n->left->key << ";" << endl;
-                }
-                if (n->right != NULL) {
-                    cout << "\t" << n->key << "->" << n->right->key << ";"<< endl;
-                }
+            if (n.left != NULL) {
+                cout << "\t" << n.key << "->" << n.left->key << ";" << endl;
+            }
+            if (n.right != NULL) {
+                cout << "\t" << n.key << "->" << n.right->key << ";"<< endl;
             }
         });
         cout << "}" << endl;
