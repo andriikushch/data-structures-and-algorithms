@@ -238,6 +238,10 @@ struct red_black_tree {
         }
     }
 
+    void remove(node * n) {
+        
+    }
+
     void print() {
         cout << "digraph graphname {" << endl;
         recursive_walk(root, [](node &n){
