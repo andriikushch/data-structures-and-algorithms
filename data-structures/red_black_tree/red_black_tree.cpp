@@ -226,20 +226,70 @@ struct red_black_tree {
                 }
             }
 
-            // simplify
+            // todo: simplify
             if (tmp->parent != NULL && tmp->parent->color == BLACK) {
                 break;
             }
         }
 
-        // simplify
+        // todo: simplify
         if (tmp->parent == NULL) {
             root = tmp;
         }
     }
 
-    void remove(node * n) {
+    void remove(int key) {
+        // search for the node to delete (should exist)
+        node * node_to_delete;
+        node_to_delete = root;
         
+        while(key != node_to_delete->key) {
+            if(key > node_to_delete->key) {
+                if(node_to_delete->right) {
+                    node_to_delete = node_to_delete->right;
+                }
+            }
+            else {
+                if(node_to_delete->left) {
+                    node_to_delete = node_to_delete->left;
+                }
+            }
+
+            // if not found
+            if (!node_to_delete->left && !node_to_delete->right && node_to_delete->key != key) {
+                return;
+            }
+        }    
+        
+        // check if node to delete left of right child
+        int side = 0; // -1,0,1 -> left, no parent, right
+        if (node_to_delete->parent != NULL) {
+            if (node_to_delete->parent->left == node_to_delete) {
+                side = -1;
+            } else if (node_to_delete->parent->right == node_to_delete) {
+                side = 1;
+            }
+        }
+
+        //simple case node or parent red and node has only one child 
+        // todo: need to care about colors
+        node * child;
+        if (node_to_delete->left != NULL && node_to_delete->right == NULL) {
+            child = node_to_delete->left;        
+        } else if (node_to_delete->left == NULL && node_to_delete->right != NULL) {
+            child = node_to_delete->right;
+        }
+        
+        if (side == -1) {
+            node_to_delete->parent->left = child;
+            child->parent = node_to_delete->parent;
+        } else if (side == 1) {
+            node_to_delete->parent->right = child;
+            child->parent = node_to_delete->parent;
+        } else {
+            return;
+        }
+
     }
 
     void print() {
